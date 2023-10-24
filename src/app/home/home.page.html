@@ -1,20 +1,19 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Cold observable-->
+  <h1>Cold Observables</h1>
+  <p *ngIf="data$ | async as myData">{{myData.title}}</p>
+  <p *ngIf="data$ | async as myData">{{myData.id}}</p>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- Hot observables-->
+
+  <h1>Hot Observables</h1>
+  <p>{{cont}}</p>
+  <button (click)="start()">Start</button>
+  <button (click)="stop()">Stop</button>
+
+  <!--Hight order observables-->
+  <h1>Hight order observables</h1>
+  <div *ngIf="dataCharacter$ | async as myCharacter">
+    <p>{{myCharacter.name}}</p>
   </div>
 </ion-content>

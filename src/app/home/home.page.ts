@@ -36,9 +36,12 @@ import { HttpClient } from '@angular/common/http';
 import {
   Observable,
   Subscription,
-  concatAll,
+  concat,
+  filter,
   interval,
   map,
+  merge,
+  of,
   switchMap,
 } from 'rxjs';
 
@@ -60,11 +63,47 @@ export class HomePage implements OnInit {
   private readonly API = 'https://rickandmortyapi.com/api/character';
   dataCharacter$!: Observable<Character>;
 
+  // Operators: map, filter
+  numbers1 = of(1, 2, 3, 4, 5, 6);
+  numbers2 = of(7, 8, 9);
+
+  // Tipos de operadores
+
+  /**
+   * Creacion: of, from, interval
+   * Tranformacion: tranforma elmobservable original los valores emituidos; map
+   * Filtrado: tranforma el observable original con una condicion: filter
+   * Combinación: merge, concat
+   * Agrupación: agrupa valores emitidos por un observable. Groupby
+   * Error handling: nos permite manejrar errores en observables: retry, catchError
+   * Terminal: marcan el final de un observbale: first, last, takeWhile
+   */
+
   ngOnInit(): void {
     this.data$ = this.http.get<Post>(
       'https://jsonplaceholder.typicode.com/posts/1'
     );
     this.getCharacter();
+
+    // map tranforma el observable original en otro
+    const squaredNumbers = this.numbers1.pipe(map((x) => x * 2));
+    console.log('***MAP***');
+    squaredNumbers.subscribe((res) => console.log(res));
+
+    // filter pone una condcion para el flujo de dtos del observable
+    const paresNumbers = this.numbers1.pipe(filter((x) => x % 2 === 0));
+    console.log('***FILTER***');
+    paresNumbers.subscribe((res) => console.log(res));
+
+    // merge: une dos observables en uno solo, se revuelven los dos ala vez
+    const mergerNumbers = merge(this.numbers1, this.numbers2);
+    console.log('***MERGE***');
+    mergerNumbers.subscribe((res) => console.log(res));
+
+    // concat: es secuencial, hasta que no se resuelve uno, no empieza la resolucion del otro
+    const concatNumbers = concat(this.numbers1, this.numbers2);
+    console.log('***CONCAT***');
+    concatNumbers.subscribe((res) => console.log(res));
   }
 
   start() {

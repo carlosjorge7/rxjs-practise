@@ -16,4 +16,31 @@
   <div *ngIf="dataCharacter$ | async as myCharacter">
     <p>{{myCharacter.name}}</p>
   </div>
+
+  <!-- Map tranforms -->
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>NAME</th>
+          <th>EMAIL</th>
+          <th>COUNTRY</th>
+          <br />
+          <th>POSTCODE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+          *ngFor="let user of users"
+        >
+          <th>{{user.name}}</th>
+          <td class="px-6 py-4">{{user.email}}</td>
+          <td class="px-6 py-4">{{user.location.country}}</td>
+
+          <td class="px-6 py-4">{{user.location.postcode}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </ion-content>

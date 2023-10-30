@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
+  EMPTY,
   Observable,
+  Subject,
   Subscription,
   concat,
   delay,
@@ -11,6 +13,7 @@ import {
   merge,
   of,
   switchMap,
+  takeUntil,
   tap,
   timestamp,
 } from 'rxjs';
@@ -61,6 +64,26 @@ export class HomePage implements OnInit {
 
   // map operatos
   users: User[] = [];
+
+  // switchmap: nos permite cambiar un nuevo observable cada vez que se emite un valor, es como un map + first. Cancela la peticinon anterior
+  searchTerm$ = new Subject<string>();
+  results$!: Observable<User>;
+
+  constructor() {
+    // switchmap
+    this.results$ = this.searchTerm$.pipe(
+      switchMap((term: string) => this.search$(term))
+    );
+  }
+
+  private search$(user: string): Observable<User> {
+    const found = allUsers.find((item: User) => item.name === user);
+    return found ? of(found) : EMPTY;
+  }
+
+  // takeunitl: es util para cancelar o compoletar la emision de un observable
+  private stop$ = new Subject<number>();
+  count = 0;
 
   ngOnInit(): void {
     this.data$ = this.http.get<Post>(
@@ -154,5 +177,23 @@ export class HomePage implements OnInit {
       map(() => Math.floor(Math.random() * 20)),
       switchMap((id: number) => this.http.get<Character>(`${this.API}/${id}`))
     );
+  }
+
+  search($event: Event) {
+    const element = $event.currentTarget as HTMLIonSearchbarElement;
+    this.searchTerm$.next(element.value as string);
+  }
+
+  startCount() {
+    interval(1000)
+      .pipe(
+        takeUntil(this.stop$), // Va a emitir valores hasta que se pulse stop
+        tap((val: number) => (this.count = val))
+      )
+      .subscribe((val: number) => console.log(val));
+  }
+
+  stopCount() {
+    this.stop$.next(0);
   }
 }

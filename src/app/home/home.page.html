@@ -18,6 +18,7 @@
   </div>
 
   <!-- Map tranforms -->
+  <h1>MAP</h1>
   <div>
     <table>
       <thead>
@@ -43,4 +44,22 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Switch map -->
+  <h1>Switchmap</h1>
+  <ion-searchbar
+    placeholder="Buscar ..."
+    (ionChange)="search($any($event))"
+  ></ion-searchbar>
+
+  <div *ngIf="results$ | async as results">{{ results | json }}</div>
+
+  <!--take until-->
+
+  <h1>takeuntil</h1>
+
+  <ion-button (click)="startCount()" color="primary">Start</ion-button>
+  <ion-button (click)="stopCount()" color="danger">stop</ion-button>
+
+  <p>{{count }}</p>
 </ion-content>

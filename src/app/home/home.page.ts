@@ -1,111 +1,3 @@
-const countryCodes: { [key: string]: string } = {
-  nz: 'New Zealand',
-  nl: 'Netherlands',
-  ca: 'Canada',
-  ua: 'Ukraine',
-};
-
-export interface Location {
-  city: string;
-  country: string;
-  postcode: string;
-}
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  gender: string;
-  location: Location;
-  countryName?: string;
-}
-
-export const users = [
-  {
-    id: 1,
-    name: 'Aubree Ennis',
-    email: 'aubree@example.com',
-    phone: '(209)-062-0668"',
-    gender: 'male',
-    location: {
-      city: 'Dunedin',
-      country: 'nz',
-      postcode: '64183',
-    },
-  },
-  {
-    id: 2,
-    name: 'Annabelle Andersons',
-    email: 'andersons@example.com',
-    phone: '(250) 555-0199',
-    gender: 'female',
-    location: {
-      city: 'Cochrane',
-      country: 'ca',
-      postcode: 'E4Y 1C2',
-    },
-  },
-  {
-    id: 3,
-    name: 'Vitaliya Shimanovskogo',
-    email: 'vitaliya@example.com',
-    phone: '(098) 529-6958',
-    gender: 'female',
-    location: {
-      city: 'Berezhani',
-      country: 'ua',
-      postcode: '21296',
-    },
-  },
-  {
-    id: 4,
-    name: 'Noah Côté',
-    email: 'noah@example.com',
-    phone: '(020) 9492532',
-    gender: 'female',
-    location: {
-      city: 'Loosbroek',
-      country: 'nl',
-      postcode: '1393 EY',
-    },
-  },
-];
-
-interface Post {
-  userId: number;
-  id: number;
-  title: string;
-  completed: boolean;
-  country?: string;
-}
-
-interface Response {
-  info: Info;
-  results: Character[];
-}
-
-interface Info {
-  count: number;
-  pages: number;
-  next: string;
-  prev: any;
-}
-
-interface Character {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  type: string;
-  gender: string;
-  origin: any;
-  location: Location;
-  image: string;
-  episode: string[];
-  url: string;
-  created: string;
-}
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -122,6 +14,14 @@ import {
   tap,
   timestamp,
 } from 'rxjs';
+import {
+  Character,
+  Post,
+  User,
+  allUsers,
+  countryCodes,
+  Response,
+} from '../utils/utils';
 
 @Component({
   selector: 'app-home',
@@ -220,17 +120,18 @@ export class HomePage implements OnInit {
      * Queremos tranformar los codes de las country a el nombre
      */
     // map: para tranformar el observable original
-    // this.getUsers()
-    //   .pipe(
-    //     tap((allUsers: User[]) => console.log('users')),
-    //     map(allUsers=>{
-    //       allUsers.map((user: User)=> ({
-
-    //       }))
-    //     }),
-    //     tap((allUsers: User[]) => (this.users = allUsers))
-    //   )
-    //   .subscribe();
+    this.getUsers()
+      .pipe(
+        tap((users: User[]) => console.log('users')),
+        map((users) => {
+          return users.map((user: User) => ({
+            ...user,
+            countryName: countryCodes[user.location.country] || 'Undefinde',
+          }));
+        }),
+        tap((users: User[]) => (this.users = users))
+      )
+      .subscribe();
   }
 
   start() {
@@ -243,7 +144,7 @@ export class HomePage implements OnInit {
   }
 
   getUsers(): Observable<User[]> {
-    return of(users);
+    return of(allUsers);
   }
 
   // Higth order observables

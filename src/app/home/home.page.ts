@@ -1,4 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   EMPTY,
@@ -8,10 +14,13 @@ import {
   concat,
   delay,
   filter,
+  fromEvent,
   interval,
   map,
   merge,
   of,
+  single,
+  startWith,
   switchMap,
   takeUntil,
   tap,
@@ -85,6 +94,13 @@ export class HomePage implements OnInit {
   private stop$ = new Subject<number>();
   count = 0;
 
+  // single: pone una condicion en el observable y completa la subscripcion (la cierra)
+
+  // startWith: antes de que se emita ekl observable original, pone un valor inicial
+
+  // fromEvent: Es un operador que permite crear un pbservable a partir de un evento de un elemento html del DOM
+  @ViewChild('myButton', { static: true }) myButton!: ElementRef;
+
   ngOnInit(): void {
     this.data$ = this.http.get<Post>(
       'https://jsonplaceholder.typicode.com/posts/1'
@@ -155,6 +171,27 @@ export class HomePage implements OnInit {
         tap((users: User[]) => (this.users = users))
       )
       .subscribe();
+
+    // Single operatos
+    console.log('SINGLE');
+    this.dataFlow$
+      .pipe(
+        single((number: number) => number === 3),
+        tap((res) => console.log(res))
+      )
+      .subscribe();
+
+    console.log('STARTWITH');
+    this.dataFlow$
+      .pipe(
+        startWith(9),
+        tap((res) => console.log(res))
+      )
+      .subscribe();
+
+    console.log('FROMEVENT');
+    const document$ = fromEvent(this.myButton.nativeElement, 'click');
+    document$.pipe(tap((res) => console.log(res))).subscribe();
   }
 
   start() {

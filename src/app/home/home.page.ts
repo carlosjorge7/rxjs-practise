@@ -7,11 +7,14 @@ import {
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
+  BehaviorSubject,
   EMPTY,
   Observable,
   Subject,
   Subscription,
+  catchError,
   concat,
+  concatWith,
   delay,
   filter,
   fromEvent,
@@ -19,12 +22,14 @@ import {
   map,
   merge,
   of,
+  retry,
   single,
   startWith,
   switchMap,
   take,
   takeUntil,
   tap,
+  throwError,
   timestamp,
   withLatestFrom,
 } from 'rxjs';
@@ -108,6 +113,15 @@ export class HomePage implements OnInit {
   formProfile!: FormGroup;
   combinedValues$!: Observable<[string, string] | undefined>;
   private readonly fb = inject(FormBuilder);
+
+  // concatWith: se usa para contatenar 2 o mas observables. Es secuencial, hasta que no termina de emitir el observable fuente, no empieza la emision del segundo. Recibe argumernts observables
+  apiTodos = 'https://jsonplaceholder.typicode.com/todos';
+
+  // Subject: podemos subscribirnos a el y para emitir valores. Es observable y observer
+  subject = new Subject<string>();
+
+  // BehaviorSubject: es como el subject, pero con valor inicial.
+  behaviorSubject = new BehaviorSubject<string>('init value');
 
   ngOnInit(): void {
     this.data$ = this.http.get<Post>(
@@ -226,6 +240,20 @@ export class HomePage implements OnInit {
     ].valueChanges.pipe(
       withLatestFrom(this.formProfile.controls['nombre'].valueChanges)
     );
+
+    // Concact
+    this.getTodos()
+      .pipe(tap((res) => console.log(res)))
+      .subscribe();
+
+    // catch error
+    this.getData()
+      .pipe(tap((res) => console.log(res)))
+      .subscribe({
+        error: (error) => {
+          console.log(error);
+        },
+      });
   }
 
   start() {
@@ -266,5 +294,21 @@ export class HomePage implements OnInit {
 
   stopCount() {
     this.stop$.next(0);
+  }
+
+  getTodos(): Observable<any> {
+    const obs1 = this.http.get(`${this.apiTodos}/1`);
+    const obs2 = this.http.get(`${this.apiTodos}/2`);
+    return obs1.pipe(concatWith(obs2));
+  }
+
+  getData(): Observable<Character[]> {
+    return this.http.get<Response>(this.API + 'kj').pipe(
+      retry(3),
+      map((res: Response) => res.results),
+      catchError((error) => of(error))
+      // catchError(() => throwError(() => new Error('Algo ha salido mal')))
+      // catchError(() => EMPTY)
+    );
   }
 }

@@ -76,4 +76,14 @@
     <input type="text" formControlName="nombre" placeholder="Nombre" /> <br />
     <input type="text" formControlName="apellidos" placeholder="Apellidos" />
   </form>
+
+  <h1>Subject</h1>
+  <ion-button (click)="subject.next('hola')">Click subject</ion-button>
+  {{subject | async}}
+
+  <h1>BehaviorSubject</h1>
+  <ion-button (click)="behaviorSubject.next('hola')"
+    >Click BehaviorSubject</ion-button
+  >
+  {{behaviorSubject | async}}
 </ion-content>

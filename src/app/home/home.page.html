@@ -66,4 +66,14 @@
   <!-- fromEvent-->
 
   <button #myButton>Boton</button>
+
+  <h1>withLatestFrom</h1>
+
+  <h3 *ngIf="combinedValues$ | async as combinedValues">
+    Hola {{ combinedValues }}
+  </h3>
+  <form [formGroup]="formProfile">
+    <input type="text" formControlName="nombre" placeholder="Nombre" /> <br />
+    <input type="text" formControlName="apellidos" placeholder="Apellidos" />
+  </form>
 </ion-content>

@@ -22,9 +22,11 @@ import {
   single,
   startWith,
   switchMap,
+  take,
   takeUntil,
   tap,
   timestamp,
+  withLatestFrom,
 } from 'rxjs';
 import {
   Character,
@@ -34,6 +36,7 @@ import {
   countryCodes,
   Response,
 } from '../utils/utils';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -100,6 +103,11 @@ export class HomePage implements OnInit {
 
   // fromEvent: Es un operador que permite crear un pbservable a partir de un evento de un elemento html del DOM
   @ViewChild('myButton', { static: true }) myButton!: ElementRef;
+
+  // witLatestFrom
+  formProfile!: FormGroup;
+  combinedValues$!: Observable<[string, string] | undefined>;
+  private readonly fb = inject(FormBuilder);
 
   ngOnInit(): void {
     this.data$ = this.http.get<Post>(
@@ -192,6 +200,32 @@ export class HomePage implements OnInit {
     console.log('FROMEVENT');
     const document$ = fromEvent(this.myButton.nativeElement, 'click');
     document$.pipe(tap((res) => console.log(res))).subscribe();
+
+    // take: coge los n primeros valores del observable
+    console.log('TAKE ');
+    this.dataFlow$.pipe(take(2)).subscribe((res) => console.log(res));
+
+    /*combineLatestAll: combina valores de observables
+    const clicks = fromEvent(document, 'click');
+    const higherOrder = clicks.pipe(
+      map(() => interval(Math.random() * 2000).pipe(take(3))),
+      take(2)
+    );
+    const result = higherOrder.pipe(combineLatestAll());
+
+    result.subscribe((x) => console.log(x));*/
+
+    // withLatestFrom: el un observable que combina el valor mas reciente del observable principal con el valor mas reciente de un observable secundario
+    this.formProfile = this.fb.group({
+      nombre: '',
+      apellidos: '',
+    });
+
+    this.combinedValues$ = this.formProfile.controls[
+      'apellidos'
+    ].valueChanges.pipe(
+      withLatestFrom(this.formProfile.controls['nombre'].valueChanges)
+    );
   }
 
   start() {

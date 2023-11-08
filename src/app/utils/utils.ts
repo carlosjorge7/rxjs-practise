@@ -80,7 +80,7 @@ export interface Post {
   country?: string;
 }
 
-export interface Response {
+export interface ResponseInforResult {
   info: Info;
   results: Character[];
 }

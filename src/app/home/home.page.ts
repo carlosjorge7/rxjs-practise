@@ -39,7 +39,7 @@ import {
   User,
   allUsers,
   countryCodes,
-  Response,
+  ResponseInforResult,
 } from '../utils/utils';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -271,8 +271,11 @@ export class HomePage implements OnInit {
 
   // Higth order observables
   getCharacter() {
-    this.dataCharacter$ = this.http.get<Response>(this.API).pipe(
-      map((response: Response) => response.results),
+    this.dataCharacter$ = this.http.get<ResponseInforResult>(this.API).pipe(
+      map(
+        (ResponseInforResult: ResponseInforResult) =>
+          ResponseInforResult.results
+      ),
       map(() => Math.floor(Math.random() * 20)),
       switchMap((id: number) => this.http.get<Character>(`${this.API}/${id}`))
     );
@@ -303,9 +306,9 @@ export class HomePage implements OnInit {
   }
 
   getData(): Observable<Character[]> {
-    return this.http.get<Response>(this.API + 'kj').pipe(
+    return this.http.get<ResponseInforResult>(this.API + 'kj').pipe(
       retry(3),
-      map((res: Response) => res.results),
+      map((res: ResponseInforResult) => res.results),
       catchError((error) => of(error))
       // catchError(() => throwError(() => new Error('Algo ha salido mal')))
       // catchError(() => EMPTY)

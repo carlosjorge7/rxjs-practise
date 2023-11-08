@@ -1,0 +1,13 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>async-pipe</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div>
+    <ul *ngIf="data$ |async as characters">
+      <li *ngFor="let character of characters">{{character.name}}</li>
+    </ul>
+  </div>
+</ion-content>

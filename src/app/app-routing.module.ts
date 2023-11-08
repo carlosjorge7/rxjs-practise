@@ -19,6 +19,10 @@ const routes: Routes = [
         (m) => m.UnsubscribePageModule
       ),
   },
+  {
+    path: 'async-pipe',
+    loadChildren: () => import('./async-pipe/async-pipe.module').then( m => m.AsyncPipePageModule)
+  },
 ];
 
 @NgModule({

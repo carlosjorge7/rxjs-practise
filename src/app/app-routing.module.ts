@@ -23,6 +23,10 @@ const routes: Routes = [
     path: 'async-pipe',
     loadChildren: () => import('./async-pipe/async-pipe.module').then( m => m.AsyncPipePageModule)
   },
+  {
+    path: 'caching',
+    loadChildren: () => import('./caching/caching.module').then( m => m.CachingPageModule)
+  },
 ];
 
 @NgModule({

@@ -15,7 +15,9 @@ import {
   catchError,
   concat,
   concatWith,
+  debounceTime,
   delay,
+  distinctUntilChanged,
   filter,
   fromEvent,
   interval,
@@ -84,12 +86,18 @@ export class HomePage implements OnInit {
 
   // switchmap: nos permite cambiar un nuevo observable cada vez que se emite un valor, es como un map + first. Cancela la peticinon anterior
   searchTerm$ = new Subject<string>();
-  results$!: Observable<User>;
+  // results$!: Observable<User>;
+
+  // Practise search
+  characters$!: Observable<Character[]>;
 
   constructor() {
     // switchmap
-    this.results$ = this.searchTerm$.pipe(
-      switchMap((term: string) => this.search$(term))
+    this.characters$ = this.searchTerm$.pipe(
+      filter((name: string) => name.length >= 4),
+      debounceTime(3000), // para meter un delay
+      distinctUntilChanged(), // si el valor es igual q el anterior, distinguirlo y no llaamr
+      switchMap((name: string) => this.filterCharacter(name))
     );
   }
 
@@ -312,6 +320,14 @@ export class HomePage implements OnInit {
       catchError((error) => of(error))
       // catchError(() => throwError(() => new Error('Algo ha salido mal')))
       // catchError(() => EMPTY)
+    );
+  }
+
+  filterCharacter(name: string): Observable<Character[]> {
+    const api = `https://rickandmortyapi.com/api/character?name=${name}`;
+    return this.http.get<ResponseInforResult>(api).pipe(
+      map((res) => res.results),
+      catchError(() => EMPTY)
     );
   }
 }

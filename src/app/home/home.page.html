@@ -52,7 +52,16 @@
     (ionChange)="search($any($event))"
   ></ion-searchbar>
 
-  <div *ngIf="results$ | async as results">{{ results | json }}</div>
+  <div *ngIf="characters$ | async as characters">
+    <ion-card *ngFor="let character of characters">
+      <img [src]="character.image" alt="www" />
+      <ion-card-header>
+        <ion-card-title> {{character.name}}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content> {{character.name}} </ion-card-content>
+    </ion-card>
+  </div>
 
   <!--take until-->
 
